@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
@@ -11,37 +12,91 @@
     tools:context="com.example.aliarslan.myapplication.MainActivity">
 
     <TextView
-        android:text="Coordinate Y"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:id="@+id/coordY"
-        android:textSize="30sp"
-        android:layout_below="@+id/coordX"
-        android:layout_alignLeft="@+id/coordX"
-        android:layout_alignStart="@+id/coordX" />
-
-    <TextView
         android:text="Coordinate X"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="46dp"
-        android:layout_marginStart="46dp"
-        android:layout_marginTop="59dp"
+        android:layout_marginLeft="11dp"
+        android:layout_marginStart="11dp"
         android:id="@+id/coordX"
-        android:textSize="30sp"
+        android:textSize="24sp"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
     <TextView
+        android:text="Coordinate Y"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="62dp"
+        android:id="@+id/coordY"
+        android:textSize="24sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="19dp"
+        android:layout_marginEnd="19dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="DEBUG DATA: "
         android:id="@+id/debug_data"
-        android:textSize="30sp"
-        android:layout_below="@+id/coordY"
+        android:textSize="24sp"
+        android:layout_below="@+id/coordX" />
+
+    <TextView
+        android:text="Bearing: "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bearing"
+        android:textSize="24sp"
         android:layout_alignLeft="@+id/coordY"
-        android:layout_alignStart="@+id/coordY" />
+        android:layout_alignStart="@+id/coordY"
+        android:layout_below="@+id/coordY" />
+
+    <TextView
+        android:text="Floor: 3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/debug_data"
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="6dp"
+        android:id="@+id/textView"
+        android:textSize="24sp" />
+
+    <TextView
+        android:text="Altitude: "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textView"
+        android:layout_alignLeft="@+id/bearing"
+        android:layout_alignStart="@+id/bearing"
+        android:id="@+id/altitude"
+        android:textSize="24sp" />
+
+    <AbsoluteLayout
+        android:id="@+id/Container"
+        android:layout_width="match_parent"
+        android:layout_height="800dp"
+        android:layout_alignParentBottom="true">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="465dp"
+            app:srcCompat="@drawable/area1"
+            android:layout_x="3dp"
+            android:layout_y="130dp"
+            android:id="@+id/map_container" />
+
+        <ImageView
+            app:srcCompat="@drawable/m"
+            android:layout_x="92dp"
+            android:layout_y="440dp"
+            android:id="@+id/marker"
+            android:layout_width="32dp"
+            android:layout_height="42dp"
+            android:elevation="24dp" />
+    </AbsoluteLayout>
+
+
 </RelativeLayout>

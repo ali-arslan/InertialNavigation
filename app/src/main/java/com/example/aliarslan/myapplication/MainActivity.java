@@ -13,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.AbsoluteLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -27,13 +29,15 @@ import com.samsung.android.sdk.motion.SmotionPedometer;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener, LocationListener {
 
-    TextView debugTW, cX, cY;
+    TextView debugTW, cX, cY, bear;
     Boolean offsetter = true;
-    int currX, currY;
+    double currX, currY, prevX, prevY;
     double distOffset;
     private Smotion mMotion;
     private SmotionPedometer mPedometer;
 
+    private Sensor sensor;
+    private float altitude = 0;
     private SensorManager mSensorManager;
 
     // Gravity for accelerometer data
@@ -63,6 +67,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private LocationManager locationManager;
     private Location currentLocation;
 
+    ImageView marker;
+
+    int markerX = 200, markerY= 1331;
+
+    void moveMarker(int x, int y) {
+        markerX+=(x*25); // 65 px = 1 foot
+        markerY+=(y*25);
+        AbsoluteLayout.LayoutParams OBJ = new AbsoluteLayout.LayoutParams(320,420,markerX,markerY);
+        marker.setLayoutParams(OBJ);
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,10 +87,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         debugTW = (TextView) findViewById(R.id.debug_data);
         cX = (TextView) findViewById(R.id.coordX);
         cY = (TextView) findViewById(R.id.coordY);
+        bear = (TextView) findViewById(R.id.bearing);
+        marker = (ImageView) findViewById(R.id.marker);
+        AbsoluteLayout.LayoutParams OBJ = new AbsoluteLayout.LayoutParams(320,420,markerX,markerY);
+        marker.setLayoutParams(OBJ);
 
         currX = 0;
         currY = 0;
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+//        moveMarker(3,0);
 
         // initialize samsung motion
         mMotion = new Smotion();
@@ -238,7 +258,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         // update compass view
         rotationManager.setBearing((float) bearing);
-        Log.i("Rot", ""+rotationManager.bearing);
+//        Log.i("Rot", ""+rotationManager.bearing);
+        bear.setText("Bearing: " + rotationManager.bearing);
+
 
         if (accelOrMagnetic) {
 //            compassView.postInvalidate();
@@ -264,18 +286,47 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     setDistOffset(distance);
                     double speed = pedometerInfo.getSpeed   ();
                     long count = pedometerInfo.getCount(SmotionPedometer.Info.COUNT_TOTAL);
-                    String debg = "Distance: "+Util.round(distance-distOffset, 2)+" Speed: "+speed+"\nSteps taken: "+count;
+                    String debg = "  Distance: "+Util.round(distance-distOffset, 2)+"\n  Speed: "+speed;
                     debugTW.setText(debg);
-                    Log.i("Spedometer", debg);
+//                    Log.i("Spedometer", debg);
+                    resolveVector(distance-distOffset);
                 }
             };
 
+    Boolean initSet = true;
     void resolveVector(double distance) {
-
+        double bearing = Double.parseDouble(Float.valueOf(rotationManager.bearing).toString());
+        prevX = currX;
+        prevY = currY;
+        if (bearing >= 0 && bearing < 90) {
+            currX =+ distance*(Math.sin(Math.toRadians(bearing)));
+            currY =+ distance*Math.cos(Math.toRadians(bearing));
+        }
+        if (bearing >= 90 && bearing < 180) {
+            currX =+ distance*Math.sin(Math.toRadians(bearing));
+            currY =- distance*Math.cos(Math.toRadians(bearing));
+        }
+        if (bearing >= 180 && bearing < 270) {
+            currX =- distance*Math.sin(Math.toRadians(bearing));
+            currY =- distance*Math.cos(Math.toRadians(bearing));
+        }
+        if (bearing >= 270 && bearing < 360) {
+            currX =- distance*Math.sin(Math.toRadians(bearing));
+            currY =+ distance*Math.cos(Math.toRadians(bearing));
+        }
+        if (initSet) {
+            currX = 0;
+            currY= 0;
+            initSet =false;
+        }
+        updateDisplayedCoords(currX, currY, rotationManager.bearing);
+        moveMarker(new Double(currX-prevX).intValue(), new Double(currY-prevY).intValue());
     }
-    void updateDisplayedCoords(int x, int y) {
+    void updateDisplayedCoords(double x, double y, double be) {
         cX.setText("Coordinate X: "+ x);
         cY.setText("Coordinate Y: "+ y);
+        bear.setText("Bearing: " + be);
+
     }
     void setDistOffset(double offset) {
         if (offsetter) {
